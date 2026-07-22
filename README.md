@@ -1,193 +1,512 @@
-# Contact API Backend Service
+# Developer Landing API
 
-## Overview
-REST API service for handling contact form submissions with AI analysis and email notifications.
+Backend-сервис для лендинга разработчика с API для обработки обращений, AI-анализом сообщений, отправкой email-уведомлений и защитой от спама.
 
-## Tech Stack
+Проект выполнен в рамках тестового задания Backend Developer.
+
+---
+
+# Features
+
+## Backend
+
+- REST API на FastAPI
+- Валидация входных данных через Pydantic
+- Сохранение обращений в SQLite
+- Отправка email-уведомлений через SMTP
+- Копия письма пользователю
+- AI-анализ обращений через Google Gemini API
+- Автоматическая классификация сообщений
+- Анализ тональности
+- Генерация автоматического ответа
+- Rate limiting для защиты от спама
+- Глобальная обработка ошибок
+- Логирование запросов
+- CORS настройка
+- Swagger / OpenAPI документация
+
+## Frontend
+
+- Vue.js 3
+- Vite
+- Форма обратной связи
+- Отправка данных через REST API
+
+---
+
+# Tech Stack
+
+## Backend
+
 - Python 3.11
 - FastAPI
 - SQLAlchemy
 - SQLite
+- Pydantic
 - Google Gemini API
 - SMTP Gmail
+- Pytest
+
+## Frontend
+
 - Vue.js 3
 - Vite
-- Docker
 
-## Project Structure
+## Infrastructure
+
+- Docker
+- Docker Compose
+- Environment variables (.env)
+
+---
+
+# Project Structure
+
 ```
-test-task/
-├── app/                  # Backend application
+developer-landing-api/
+
+├── app/
 │   ├── api/              # API endpoints
-│   ├── core/             # Core configuration and utilities
-│   ├── models/           # Database models
-│   ├── schemas/          # Pydantic schemas
-│   ├── services/         # Business logic services
+│   ├── core/             # Configuration and logging
 │   ├── database/         # Database connection
-│   ├── utils/            # Utility functions
-│   ├── main.py           # Application entry point
-│   └── __init__.py
+│   ├── models/           # SQLAlchemy models
+│   ├── repositories/     # Database operations
+│   ├── schemas/          # Pydantic schemas
+│   ├── services/         # Business logic
+│   │   ├── ai_service.py
+│   │   ├── email_service.py
+│   │   ├── rate_limiter.py
+│   │   └── metrics_service.py
+│   ├── utils/            # Helpers and middleware
+│   └── main.py           # Application entry point
+│
 ├── frontend/             # Vue.js frontend
-│   ├── src/
-│   │   ├── components/
-│   │   ├── assets/
-│   │   ├── App.vue
-│   │   └── main.js
-│   ├── public/
-│   ├── index.html
-│   └── vite.config.js
-├── tests/                # Unit tests
-├── storage/              # Storage for rate limits and metrics
-├── static/               # Static files
-├── requirements.txt      # Python dependencies
-├── requirements-dev.txt  # Development dependencies
+│
+├── tests/                # Automated tests
+│
+├── storage/              # JSON storage for metrics/rate limit
+│
+├── static/
+│
 ├── Dockerfile
 ├── docker-compose.yml
+├── requirements.txt
+├── requirements-dev.txt
 ├── .env.example
 └── README.md
 ```
 
-## Features
-- Contact form submission with validation
-- AI-powered comment analysis using Google Gemini API
-- Email notifications via SMTP
-- Rate limiting protection
-- Global exception handling
-- CORS support
-- Comprehensive logging
-- Swagger documentation
-- Vue.js 3 frontend with Vite
-- Docker support for easy deployment
+---
 
-## Setup
+# Architecture
 
-### Prerequisites
+Проект построен по слоистой архитектуре:
+
+```
+Controller Layer
+        |
+        |
+Service Layer
+        |
+        |
+Repository Layer
+        |
+        |
+Database
+```
+
+## Flow обработки обращения:
+
+```
+User
+ |
+ |
+Frontend form
+ |
+ |
+POST /api/contact
+ |
+ |
+Validation
+ |
+ |
+Repository
+ |
+ |
+Database
+ |
+ |
+AI Analysis
+ |
+ |
+Email Notification
+ |
+ |
+Response
+```
+
+---
+
+# Installation
+
+## Requirements
+
 - Python 3.11+
-- Node.js 18+ (for frontend)
-- Docker & Docker Compose (optional)
+- Node.js 18+
+- Docker (optional)
 
-### Local Development
+---
 
-#### Backend
+# Backend Setup
+
+Clone repository:
+
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd test-task
+git clone https://github.com/Akiro291/developer-landing-api.git
 
-# Create virtual environment
+cd developer-landing-api
+```
+
+Create virtual environment:
+
+```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-# Install dependencies
+Activate:
+
+Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+Linux/Mac:
+
+```bash
+source venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
+```
 
-# Create .env file from template
-cp .env.example .env
-# Edit .env with your configuration
+Create environment file:
 
-# Run the application
+```bash
+copy .env.example .env
+```
+
+Configure variables in `.env`.
+
+Run backend:
+
+```bash
 uvicorn app.main:app --reload
 ```
 
-#### Frontend
+Backend available:
+
+```
+http://localhost:8000
+```
+
+---
+
+# Frontend Setup
+
+Go to frontend:
+
 ```bash
-# Navigate to frontend directory
 cd frontend
+```
 
-# Install dependencies
+Install dependencies:
+
+```bash
 npm install
+```
 
-# Run development server
+Run:
+
+```bash
 npm run dev
 ```
 
-### Docker
+Frontend:
+
+```
+http://localhost:5173
+```
+
+---
+
+# Docker
+
+Build and run:
+
 ```bash
-# Build and run with Docker Compose
 docker-compose up --build
-
-# Or run with Docker directly
-docker build -t contact-api .
-docker run -p 8000:8000 contact-api
 ```
 
-## Environment Variables
-Copy `.env.example` to `.env` and configure:
+Backend:
 
-### Backend
-- `DATABASE_URL` - Database connection string (default: SQLite)
-- `DEBUG` - Debug mode (default: False)
-- `GEMINI_API_KEY` - Google Gemini API key
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` - SMTP configuration
-- `SMTP_FROM_EMAIL` - Sender email address
-- `RATE_LIMIT_REQUESTS`, `RATE_LIMIT_WINDOW` - Rate limiting settings
-- `CORS_ORIGINS` - Allowed CORS origins
-
-### Frontend
-- `VITE_API_URL` - Backend API URL (default: http://localhost:8000)
-
-## API Endpoints
-- `POST /api/contact` - Submit contact form
-- `GET /api/system/health` - Health check
-- `GET /` - Root endpoint
-- `/docs` - Swagger UI
-- `/redoc` - ReDoc documentation
-
-## AI Integration
-The backend uses Google Gemini API to analyze contact form comments for sentiment, spam detection, and key insights.
-
-### Architecture
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Frontend  │────▶│   Backend    │────▶│  Google     │
-│  (Vue.js)   │     │  (FastAPI)   │     │  Gemini API │
-└─────────────┘     └──────────────┘     └─────────────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │   SMTP      │
-                  │   Gmail     │
-                  └─────────────┘
+http://localhost:8000
 ```
 
-## Examples
+Swagger:
 
-### Request Example
-```bash
-curl -X POST http://localhost:8000/api/contact \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john@example.com",
-    "message": "I have a question about your services"
-  }'
+```
+http://localhost:8000/docs
 ```
 
-### Response Example
+---
+
+# Environment Variables
+
+Example:
+
+```
+DATABASE_URL=sqlite:///./test_task.db
+
+DEBUG=True
+
+GEMINI_API_KEY=your_key
+
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+
+SMTP_USERNAME=email@gmail.com
+SMTP_PASSWORD=app_password
+
+SMTP_FROM_EMAIL=email@gmail.com
+
+RATE_LIMIT_REQUESTS=10
+RATE_LIMIT_WINDOW=60
+
+CORS_ORIGINS=*
+```
+
+---
+
+# API Documentation
+
+Swagger:
+
+```
+GET /docs
+```
+
+ReDoc:
+
+```
+GET /redoc
+```
+
+---
+
+# API Endpoints
+
+## Create Contact
+
+```
+POST /api/contact
+```
+
+Request:
+
 ```json
 {
-  "id": 1,
-  "name": "John Doe",
-  "email": "john@example.com",
-  "message": "I have a question about your services",
-  "analyzed": true,
-  "sentiment": "neutral",
-  "is_spam": false,
-  "created_at": "2026-07-22T21:34:29+05:00"
+  "name": "Alex",
+  "email": "alex@example.com",
+  "phone": "+79990000000",
+  "comment": "I want to know more about your services"
 }
 ```
 
-## Testing
-```bash
-# Install development dependencies
-pip install -r requirements-dev.txt
+Response:
 
-# Run tests
-python -m pytest tests/ -v
+```json
+{
+  "id": 1,
+  "name": "Alex",
+  "email": "alex@example.com",
+  "phone": "89990000000",
+  "comment": "...",
+  "ai_category": "question",
+  "ai_sentiment": "neutral",
+  "ai_response": "Спасибо за обращение..."
+}
 ```
 
-## Deployment
-See [DOCKER_README.md](DOCKER_README.md) for Docker deployment details.
+---
 
-## License
+## Get Contact
+
+```
+GET /api/contact/{id}
+```
+
+---
+
+## Health Check
+
+```
+GET /api/system/health
+```
+
+Example response:
+
+```json
+{
+  "status": "healthy"
+}
+```
+
+---
+
+# AI Integration
+
+Для AI-функций используется Google Gemini API.
+
+После получения обращения сервис:
+
+1. Отправляет комментарий пользователя в Gemini.
+2. Получает анализ:
+   - категория обращения
+   - тональность
+   - автоматический ответ
+3. Сохраняет результат вместе с обращением.
+
+Пример:
+
+Input:
+
+```
+Мне нужна консультация по вашему продукту
+```
+
+AI:
+
+```
+category: question
+
+sentiment: neutral
+
+response:
+Спасибо за обращение. Мы свяжемся с вами в ближайшее время.
+```
+
+---
+
+# AI Fallback
+
+Если AI сервис недоступен:
+
+- обращение сохраняется;
+- email отправляется;
+- API продолжает работать;
+- используется стандартный ответ.
+
+Это предотвращает падение сервиса при проблемах внешнего AI API.
+
+---
+
+# Email Integration
+
+Используется SMTP Gmail.
+
+После отправки формы:
+
+1. Владелец получает уведомление о новом обращении.
+2. Пользователь получает подтверждение.
+
+---
+
+# Rate Limiting
+
+Для защиты от спама реализован rate limiting.
+
+Настройки:
+
+```
+RATE_LIMIT_REQUESTS=10
+
+RATE_LIMIT_WINDOW=60
+```
+
+Пример:
+
+10 запросов за 60 секунд с одного клиента.
+
+---
+
+# Error Handling
+
+Добавлен глобальный обработчик ошибок:
+
+- корректные HTTP статус-коды;
+- логирование исключений;
+- безопасные ответы клиенту.
+
+---
+
+# Logging
+
+Все важные события записываются в лог:
+
+- API запросы;
+- ошибки;
+- ошибки AI;
+- ошибки отправки email.
+
+---
+
+# Testing
+
+Установка:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+Запуск:
+
+```bash
+pytest tests/ -v
+```
+
+---
+
+# AI Usage During Development
+
+Для разработки использовались AI-инструменты:
+
+- генерация вспомогательного кода;
+- анализ архитектуры;
+- поиск ошибок;
+- улучшение документации.
+
+Все сгенерированные части были проверены и адаптированы вручную.
+
+---
+
+# Future Improvements
+
+Возможные улучшения:
+
+- PostgreSQL вместо SQLite
+- Redis для rate limiting
+- JWT authentication для админ-панели
+- Docker deployment
+- CI/CD pipeline
+- расширенная аналитика обращений
+
+---
+
+# License
+
 MIT
